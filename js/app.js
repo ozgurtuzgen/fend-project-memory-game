@@ -25,8 +25,11 @@ $(document).ready(function () {
         cardList = shuffle(cardList);
         initiateCards(cardList);
 
+        clearInterval(timer);
+
         timer = setInterval(function () {
             timeCount = timeCount + 1;
+            $("#timer").text(timeCount);
         }, 1000);
     }
 
@@ -127,9 +130,6 @@ $(document).ready(function () {
 
     function checkGameScore() {
         // star rating implementation logic
-        if (moveCount === 15) {
-            removeStar();
-        }
         if (moveCount === 10) {
             removeStar();
         }
