@@ -1,20 +1,12 @@
 # Memory Game Project
+This is a basic memory game.
 
-## Table of Contents
+The game randomly shuffles the cards. A user wins once all cards have successfully been matched.
 
-* [Instructions](#instructions)
-* [Contributing](#contributing)
+Each unsuccessful attend will increase the number of the move that user made. Every 5 unsuccessful moves result losing a star.
 
-## Instructions
+At the end of the game user's time, star and move count will be shown to user as score!
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+**Have FUN!**
 
-To get started, open `js/app.js` and start building out the app's functionality
-
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
-
-## Contributing
-
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
-
-For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
+Don't forget, just browse __index.html__ to start the game :)

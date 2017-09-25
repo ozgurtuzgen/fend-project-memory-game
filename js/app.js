@@ -4,21 +4,30 @@ $(document).ready(function () {
 
     let moveCount;
     let openCards = [];
+    let timeCount = 0;
+    let timer;
 
     var Card = function (id, className) {
         this.id = id;
         this.className = className;
     };
+    
 
     function initiateGame() {
         let container = $("#deck");
         container.empty();
+        timeCount = 0;
+        openCards = [];
 
         resetMoveCount(0);
         resetStars();
 
         cardList = shuffle(cardList);
         initiateCards(cardList);
+
+        timer = setInterval(function () {
+            timeCount = timeCount + 1;
+        }, 1000);
     }
 
     function initiateCards(array) {
@@ -35,27 +44,26 @@ $(document).ready(function () {
 
                 displayCard(li);
 
+                let lastCard = openCards[openCards.length - 1];
+
                 var card = new Card(li[0].id, li.find("i")[0].className);
 
-                addCardToList(card);
+                let isAdded = addCardToList(card, lastCard);
 
-                if (openCards.length % 2 === 1) {
+                // do not add the same card and dont make comparision if there is not newly two clicked cards
+                if (isAdded === false || openCards.length % 2 === 1) {
                     return;
                 }
 
                 var card1 = openCards[openCards.length - 2];
                 var card2 = openCards[openCards.length - 1];
 
-                if ((card1.className === card2.className) && (card1.id === card2.id)) {
-                    return;
-                }
-
                 if (card1.className === card2.className) {
-                    setCardsAsMatch(card1, card2);                    
+                    setCardsAsMatch(card1, card2);
                 }
                 else {
                     setCardsNotMatched(card1, card2);
-                    
+
                     incrementMove();
                     checkGameScore();
                 }
@@ -66,11 +74,19 @@ $(document).ready(function () {
     }
 
     function displayCard(card) {
-        card.addClass("show"); //show first
+        card.addClass("show");
     }
 
-    function addCardToList(card) {
+    function addCardToList(card, lastCard) {
+        if (openCards.length > 0 &&
+            (lastCard.className === card.className) &&
+            (lastCard.id === card.id)) {
+            return false;
+        }
+
         openCards.push(card);
+
+        return true;
     }
 
     function setCardsAsMatch(card1, card2) {
@@ -82,12 +98,12 @@ $(document).ready(function () {
         checkGameEnding();
     }
 
-    function setCardsNotMatched(card1, card2) {
+    function setCardsNotMatched(card1, card2) {        
         setTimeout(function () {
             $("#" + card1.id).removeClass("show");
             openCards.splice(-1, 1)
             $("#" + card2.id).removeClass("show");
-            openCards.splice(-1, 1)            
+            openCards.splice(-1, 1)
         }, 200);
     }
 
@@ -99,11 +115,18 @@ $(document).ready(function () {
 
     function checkGameEnding() {
         if (openCards.length == cardList.length) {
-            alert("The game ended with a score: " + moveCount);
+            let startCount = $("#stars")[0].children.length;
+            clearInterval(timer);
+            setTimeout(function () {
+                if (confirm("Congrats! Duration: " + timeCount + " sec. Star Rating: " + startCount + ".\n Do you wanna play again?")) {
+                    initiateGame();
+                }    
+            },200);
         }
     }
 
     function checkGameScore() {
+        // star rating implementation logic
         if (moveCount === 15) {
             removeStar();
         }
@@ -119,8 +142,8 @@ $(document).ready(function () {
         var stars = $("#stars");
         while (stars[0].children.length < 3) {
             let li = $("<li>");
-            let i = $("<i>", { "class" : "fa fa-star" });
-            
+            let i = $("<i>", { "class": "fa fa-star" });
+
             li.append(i);
             stars.append(li);
         }
