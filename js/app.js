@@ -6,33 +6,55 @@ $(document).ready(function () {
     let openCards = [];
     let timeCount = 0;
     let timer;
+    let isGameStarted = false;
 
+    // card object definition
     var Card = function (id, className) {
         this.id = id;
         this.className = className;
     };
-    
 
-    function initiateGame() {
+    // dialog that is shown at the end of the game
+    var showDialog = function () {
+        let starCount =  $("#stars")[0].children.length;
+        $("#msgTimer").text(timeCount);
+        $("#msgStars").text(starCount);
+
+        $( "#dialog-confirm").dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,        
+            buttons: {
+              "Restart": function() {                 
+                initiateGame();            
+                $( this ).dialog( "close" );
+              },
+              Cancel: function() {
+                $( this ).dialog( "close" );
+              }
+            }
+          });       
+    }
+
+    // initiate game with initial values/state
+    function initiateGame() {        
         let container = $("#deck");
-        container.empty();
-        timeCount = 0;
-        openCards = [];
+        container.empty();        
+        openCards = [];     
+        isGameStarted = false;   
 
-        resetMoveCount(0);
+        resetMoveCount();
         resetStars();
+        resetTimeCount();
 
         cardList = shuffle(cardList);
         initiateCards(cardList);
 
-        clearInterval(timer);
-
-        timer = setInterval(function () {
-            timeCount = timeCount + 1;
-            $("#timer").text(timeCount);
-        }, 1000);
+        clearInterval(timer);        
     }
 
+    // add cards to dom and subscribe to its click event
     function initiateCards(array) {
         let container = $("#deck");
         for (var index = 0; index < array.length; index++) {
@@ -44,6 +66,16 @@ $(document).ready(function () {
             li.append(i);
 
             li.click(function () {
+
+                // check for the first move in the game to start timer
+                if (!isGameStarted)
+                {
+                    isGameStarted = true;
+                    timer = setInterval(function () {
+                        timeCount = timeCount + 1;
+                        $("#timer").text(timeCount);
+                    }, 1000);
+                }
 
                 displayCard(li);
 
@@ -61,6 +93,7 @@ $(document).ready(function () {
                 var card1 = openCards[openCards.length - 2];
                 var card2 = openCards[openCards.length - 1];
 
+                // if card's classes are the same that means they are the same card with same state. eg: "fa fa-diamond show" for both card
                 if (card1.className === card2.className) {
                     setCardsAsMatch(card1, card2);
                 }
@@ -80,6 +113,7 @@ $(document).ready(function () {
         card.addClass("show");
     }
 
+    // add cart to open card list if it is not already opened
     function addCardToList(card, lastCard) {
         if (openCards.length > 0 &&
             (lastCard.className === card.className) &&
@@ -101,9 +135,12 @@ $(document).ready(function () {
         checkGameEnding();
     }
 
+    // close cards if it is not matched.
     function setCardsNotMatched(card1, card2) {        
         setTimeout(function () {
+            // remove show class to close the card
             $("#" + card1.id).removeClass("show");
+            // remove from the open card list. The last two items in the array are the cards(card1,card2) 
             openCards.splice(-1, 1)
             $("#" + card2.id).removeClass("show");
             openCards.splice(-1, 1)
@@ -121,15 +158,14 @@ $(document).ready(function () {
             let startCount = $("#stars")[0].children.length;
             clearInterval(timer);
             setTimeout(function () {
-                if (confirm("Congrats! Duration: " + timeCount + " sec. Star Rating: " + startCount + ".\n Do you wanna play again?")) {
-                    initiateGame();
-                }    
+                showDialog();                
             },200);
         }
     }
 
     function checkGameScore() {
         // star rating implementation logic
+        // remove the stars in each five move.
         if (moveCount === 10) {
             removeStar();
         }
@@ -138,6 +174,7 @@ $(document).ready(function () {
         }
     }
 
+    // reset stars to old state (3 stars is the initial state of the game)
     function resetStars() {
         var stars = $("#stars");
         while (stars[0].children.length < 3) {
@@ -153,9 +190,14 @@ $(document).ready(function () {
         $('#stars li:last').remove();
     }
 
-    function resetMoveCount(count) {
-        moveCount = count;
-        $("#moveCounter").text(count);
+    function resetMoveCount() {
+        moveCount = 0;
+        $("#moveCounter").text(0);
+    }
+
+    function resetTimeCount() {
+        timeCount = 0;        
+        $("#timer").text(0);
     }
 
     // Shuffle function from http://stackoverflow.com/a/2450976
