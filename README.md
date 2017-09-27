@@ -14,7 +14,7 @@ Each unsuccessful attend will increase the number of the move that user made. Ev
 
 At the end of the game user's time, star and move count will be shown to user as score!
 
-![Screenshot](img/Screenshot.png)
+![Screenshot](img/Screenshot.PNG)
 
 **Have FUN!**
 
