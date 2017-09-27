@@ -14,27 +14,30 @@ $(document).ready(function () {
         this.className = className;
     };
 
+    $( "#dialog-confirm").dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true,        
+        autoOpen: false,        
+        buttons: {
+          "Restart": function() {                 
+            initiateGame();            
+            $( this ).dialog( "close" );
+          },
+          Cancel: function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });  
+
     // dialog that is shown at the end of the game
     var showDialog = function () {
         let starCount =  $("#stars")[0].children.length;
         $("#msgTimer").text(timeCount);
         $("#msgStars").text(starCount);
 
-        $( "#dialog-confirm").dialog({
-            resizable: false,
-            height: "auto",
-            width: 400,
-            modal: true,        
-            buttons: {
-              "Restart": function() {                 
-                initiateGame();            
-                $( this ).dialog( "close" );
-              },
-              Cancel: function() {
-                $( this ).dialog( "close" );
-              }
-            }
-          });       
+        $( "#dialog-confirm" ).dialog("open");     
     }
 
     // initiate game with initial values/state
